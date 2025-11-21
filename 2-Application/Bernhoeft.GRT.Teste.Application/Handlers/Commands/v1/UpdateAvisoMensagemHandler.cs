@@ -11,30 +11,29 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bernhoeft.GRT.Teste.Application.Handlers.Commands.v1
 {
-    public class CreateAvisoHandler : IRequestHandler<CreateAvisoRequest, IOperationResult<CreateAvisoResponse>>
+    public class UpdateAvisoMensagemHandler : IRequestHandler<UpdateAvisoMensagemRequest, IOperationResult<UpdateAvisoMensagemResponse>>
     {
         private readonly IServiceProvider _serviceProvider;
 
         private IContext _context => _serviceProvider.GetRequiredService<IContext>();
         private IAvisoRepository _avisoRepository => _serviceProvider.GetRequiredService<IAvisoRepository>();
 
-        public CreateAvisoHandler(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
+        public UpdateAvisoMensagemHandler(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
-        public async Task<IOperationResult<CreateAvisoResponse>> Handle(CreateAvisoRequest request, CancellationToken cancellationToken)
+        public async Task<IOperationResult<UpdateAvisoMensagemResponse>> Handle(UpdateAvisoMensagemRequest request, CancellationToken cancellationToken)
         {
-            var entity = new AvisoEntity
-            {
-                Ativo = true,
-                Titulo = request.Titulo,
-                Mensagem = request.Mensagem,
+            var entity = await _avisoRepository.GetByIdAsync(request.Id, cancellationToken);
+            
+            if (entity is default(AvisoEntity))
+                return OperationResult<UpdateAvisoMensagemResponse>.ReturnNotFound();
 
-                
-            };
+            // Atualiza APENAS a mensagem
+            entity.Mensagem = request.Mensagem;
+            entity.DataAtualizacao = DateTime.UtcNow;
 
-            await _avisoRepository.AddAsync(entity, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return OperationResult<CreateAvisoResponse>.Return(CustomHttpStatusCode.Created, (CreateAvisoResponse)entity);
+            return OperationResult<UpdateAvisoMensagemResponse>.ReturnOk((UpdateAvisoMensagemResponse)entity);
         }
     }
 }

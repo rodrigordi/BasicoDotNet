@@ -16,14 +16,13 @@ namespace Bernhoeft.GRT.Teste.Application.Handlers.Queries.v1
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private IContext _context => _serviceProvider.GetRequiredService<IContext>();
         private IAvisoRepository _avisoRepository => _serviceProvider.GetRequiredService<IAvisoRepository>();
 
         public GetAvisoHandler(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
         public async Task<IOperationResult<GetAvisoResponse>> Handle(GetAvisoRequest request, CancellationToken cancellationToken)
         {
-            var result = await _avisoRepository.ObterAvisoPorIdAsync(request.Id, TrackingBehavior.NoTracking);
+            var result = await _avisoRepository.GetByIdAsync(request.Id, cancellationToken);
             if (result is default(AvisoEntity))
                 return OperationResult<GetAvisoResponse>.ReturnNoContent();
 

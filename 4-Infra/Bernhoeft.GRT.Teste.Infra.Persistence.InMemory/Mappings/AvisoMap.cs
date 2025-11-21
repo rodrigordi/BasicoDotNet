@@ -16,6 +16,10 @@ namespace Bernhoeft.GRT.ContractWeb.Infra.Persistence.SqlServer.ContractStore.Ma
             builder.Property(x => x.Titulo).HasColumnName(@"titulo").HasColumnType("varchar(50)").IsRequired().IsUnicode(false).HasMaxLength(50);
             builder.Property(x => x.Mensagem).HasColumnName(@"mensagem").HasColumnType("text(2147483647)").IsRequired().IsUnicode(false).HasMaxLength(2147483647);
 
+            builder.Property(x => x.DataCriacao).HasColumnName(@"datacriacao").HasColumnType("datetime").IsRequired();
+            builder.Property(x => x.DataAtualizacao).HasColumnName(@"dataatualizacao").HasColumnType("datetime").IsRequired();
+            builder.Property(x => x.Deleted).HasColumnName(@"deleted").HasColumnType("bit").IsRequired();
+
             InitializePartial(builder);
         }
 

@@ -17,14 +17,15 @@ namespace Bernhoeft.GRT.ContractWeb.Infra.Persistence.SqlServer.ContractStore.Re
         public Task<List<AvisoEntity>> ObterTodosAvisosAsync(TrackingBehavior tracking = TrackingBehavior.Default, CancellationToken cancellationToken = default)
         {
             var query = tracking is TrackingBehavior.NoTracking ? Set.AsNoTrackingWithIdentityResolution() : Set;
+
+            //Filtrar não deletados (soft delete : subir isso para o Repository base?)
+            query = query.Where(p => !p.Deleted);
+
+            //Filtrar avisos ativos
+            query = query.Where(a => a.Ativo);
             return query.ToListAsync(cancellationToken);
         }
 
-        public Task<AvisoEntity> ObterAvisoPorIdAsync(int id, TrackingBehavior tracking = TrackingBehavior.Default, CancellationToken cancellationToken = default)
-        {
-            var query = tracking is TrackingBehavior.NoTracking ? Set.AsNoTrackingWithIdentityResolution() : Set;
-            return query.SingleOrDefaultAsync(p => p.Id == id, cancellationToken);
-        }
     }
 
 }
