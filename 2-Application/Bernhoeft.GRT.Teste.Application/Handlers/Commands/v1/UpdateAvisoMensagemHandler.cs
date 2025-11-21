@@ -31,6 +31,7 @@ namespace Bernhoeft.GRT.Teste.Application.Handlers.Commands.v1
             entity.Mensagem = request.Mensagem;
             entity.DataAtualizacao = DateTime.UtcNow;
 
+            _avisoRepository.Update(entity);
             await _context.SaveChangesAsync(cancellationToken);
 
             return OperationResult<UpdateAvisoMensagemResponse>.ReturnOk((UpdateAvisoMensagemResponse)entity);

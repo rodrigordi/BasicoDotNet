@@ -63,5 +63,27 @@ namespace Bernhoeft.GRT.Teste.Api.Controllers.v1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<object> CreateAviso([FromBody] CreateAvisoRequest request, CancellationToken cancellationToken)
             => await Mediator.Send(request, cancellationToken);
+
+
+
+        /// <summary>
+        /// Atualiza a Mensagem de um Aviso existente.
+        /// </summary>
+        /// <param name="id">ID do Aviso.</param>
+        /// <param name="request">Dados para atualização.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Aviso atualizado.</returns>
+        /// <response code="200">Aviso atualizado com sucesso.</response>
+        /// <response code="400">Dados Inválidos.</response>
+        /// <response code="404">Aviso Não Encontrado.</response>
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UpdateAvisoMensagemResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<object> UpdateAvisoMensagem([FromRoute] int id, [FromBody] UpdateAvisoMensagemRequest request, CancellationToken cancellationToken)
+        {
+            request.Id = id; // Garante que o Id da rota sobrescreve o Id do body (se vier)
+            return await Mediator.Send(request, cancellationToken);
+        }
     }
 }
