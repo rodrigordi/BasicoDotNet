@@ -97,7 +97,8 @@ ValidatorOptions.Global.DefaultRuleLevelCascadeMode = CascadeMode.Stop;
 ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("pt-BR");
 builder.Services.AddFluentValidationAutoValidation(options => options.DisableDataAnnotationsValidation = true)
                 .AddFluentValidationClientsideAdapters()
-                .AddValidatorsFromAssemblyContaining<GetAvisosRequest>();
+                .AddValidatorsFromAssemblyContaining<GetAvisoRequest>();
+
 builder.Services.AddFluentValidationRulesToSwagger();
 
 // Configure Some Options
