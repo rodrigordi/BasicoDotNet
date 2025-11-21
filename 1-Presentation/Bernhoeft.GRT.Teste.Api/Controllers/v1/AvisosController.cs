@@ -1,4 +1,6 @@
-﻿using Bernhoeft.GRT.Teste.Application.Requests.Queries.v1;
+﻿using Bernhoeft.GRT.Teste.Application.Requests.Commands.v1;
+using Bernhoeft.GRT.Teste.Application.Requests.Queries.v1;
+using Bernhoeft.GRT.Teste.Application.Responses.Commands.v1;
 using Bernhoeft.GRT.Teste.Application.Responses.Queries.v1;
 
 namespace Bernhoeft.GRT.Teste.Api.Controllers.v1
@@ -18,7 +20,7 @@ namespace Bernhoeft.GRT.Teste.Api.Controllers.v1
         /// <summary>
         /// Retorna um Aviso por ID.
         /// </summary>
-        /// <param name="request"></param>
+        /// <param name="request">Request com o ID do Aviso.</param>
         /// <param name="cancellationToken"></param>
         /// <returns>Aviso.</returns>
         /// <response code="200">Sucesso.</response>
@@ -45,5 +47,21 @@ namespace Bernhoeft.GRT.Teste.Api.Controllers.v1
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<object> GetAvisos(CancellationToken cancellationToken)
             => await Mediator.Send(new GetAvisosRequest(), cancellationToken);
+
+
+
+        /// <summary>
+        /// Cria um novo Aviso.
+        /// </summary>
+        /// <param name="request">Dados do Aviso a ser criado.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Aviso criado.</returns>
+        /// <response code="201">Aviso criado com sucesso.</response>
+        /// <response code="400">Dados Inválidos.</response>
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(CreateAvisoResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<object> CreateAviso([FromBody] CreateAvisoRequest request, CancellationToken cancellationToken)
+            => await Mediator.Send(request, cancellationToken);
     }
 }
