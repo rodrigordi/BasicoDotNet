@@ -16,6 +16,7 @@ namespace Bernhoeft.GRT.Teste.Application.Handlers.Queries.v1
     {
         private readonly IServiceProvider _serviceProvider;
 
+        private IContext _context => _serviceProvider.GetRequiredService<IContext>();
         private IAvisoRepository _avisoRepository => _serviceProvider.GetRequiredService<IAvisoRepository>();
 
         public GetAvisoHandler(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
@@ -23,7 +24,9 @@ namespace Bernhoeft.GRT.Teste.Application.Handlers.Queries.v1
         public async Task<IOperationResult<GetAvisoResponse>> Handle(GetAvisoRequest request, CancellationToken cancellationToken)
         {
             var result = await _avisoRepository.GetByIdAsync(request.Id, cancellationToken);
-            if (result is default(AvisoEntity))
+            
+            // Retorna 404 se não existir ou se estiver deletado (soft delete)
+            if (result is null || result.Deleted)
                 return OperationResult<GetAvisoResponse>.ReturnNoContent();
 
             return OperationResult<GetAvisoResponse>.ReturnOk((GetAvisoResponse)result);

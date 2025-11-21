@@ -85,5 +85,22 @@ namespace Bernhoeft.GRT.Teste.Api.Controllers.v1
             request.Id = id; // Garante que o Id da rota sobrescreve o Id do body (se vier)
             return await Mediator.Send(request, cancellationToken);
         }
+
+
+        /// <summary>
+        /// Remove um Aviso (Soft Delete).
+        /// </summary>
+        /// <param name="request">Request com o ID do Aviso.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>Sem conteúdo.</returns>
+        /// <response code="204">Aviso removido com sucesso.</response>
+        /// <response code="400">Dados Inválidos.</response>
+        /// <response code="404">Aviso Não Encontrado.</response>
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<object> DeleteAviso([FromRoute] DeleteAvisoRequest request, CancellationToken cancellationToken)
+            => await Mediator.Send(request, cancellationToken);
     }
 }

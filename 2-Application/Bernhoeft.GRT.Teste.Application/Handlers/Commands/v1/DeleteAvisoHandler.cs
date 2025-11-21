@@ -11,31 +11,30 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bernhoeft.GRT.Teste.Application.Handlers.Commands.v1
 {
-    public class UpdateAvisoMensagemHandler : IRequestHandler<UpdateAvisoMensagemRequest, IOperationResult<UpdateAvisoMensagemResponse>>
+    public class DeleteAvisoHandler : IRequestHandler<DeleteAvisoRequest, IOperationResult<DeleteAvisoResponse>>
     {
         private readonly IServiceProvider _serviceProvider;
 
         private IContext _context => _serviceProvider.GetRequiredService<IContext>();
         private IAvisoRepository _avisoRepository => _serviceProvider.GetRequiredService<IAvisoRepository>();
 
-        public UpdateAvisoMensagemHandler(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
+        public DeleteAvisoHandler(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
-        public async Task<IOperationResult<UpdateAvisoMensagemResponse>> Handle(UpdateAvisoMensagemRequest request, CancellationToken cancellationToken)
+        public async Task<IOperationResult<DeleteAvisoResponse>> Handle(DeleteAvisoRequest request, CancellationToken cancellationToken)
         {
             var entity = await _avisoRepository.GetByIdAsync(request.Id, cancellationToken);
-            
-            // Retorna 404 se não existir ou se estiver deletado (soft delete)
-            if (entity is null || entity.Deleted)
-                return OperationResult<UpdateAvisoMensagemResponse>.ReturnNotFound();
 
-            // Atualiza APENAS a mensagem
-            entity.Mensagem = request.Mensagem;
+            if (entity is null || entity.Deleted)
+                return OperationResult<DeleteAvisoResponse>.ReturnNotFound();
+
+            // Soft Delete: marca como deletado ao invés de remover
+            entity.Deleted = true;
             entity.DataAtualizacao = DateTime.UtcNow;
 
             _avisoRepository.Update(entity);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return OperationResult<UpdateAvisoMensagemResponse>.ReturnOk((UpdateAvisoMensagemResponse)entity);
+            return OperationResult<DeleteAvisoResponse>.Return(CustomHttpStatusCode.Ok, (DeleteAvisoResponse)entity);
         }
     }
 }
